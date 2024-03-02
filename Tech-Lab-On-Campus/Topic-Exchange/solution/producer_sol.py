@@ -2,6 +2,9 @@ from producer_interface import mqProducerInterface
 import pika
 import os
 
+from stock import Stock
+import json
+
 class mqProducer(mqProducerInterface):
     def __init__(self, routing_key: str, exchange_name: str):
         # Save parameters to class variables
@@ -24,18 +27,27 @@ class mqProducer(mqProducerInterface):
             exchange=self.exchange_name, exchange_type="topic"
         )
 
-    def publishOrder(self, message: str):
+    def publishOrder(self, sector: str, stock: Stock):
         # Create Appropiate Topic String
+        topic = f"stock.{stock.ticker}.sector.{sector}"
+
+        dict = {
+            "ticker": stock.ticker,
+            "price": stock.price,
+            "volume": stock.volume
+        }
+        message = json.dumps(dict)
+
+
+        # Send serialized message or String
         self.channel.basic_publish(
             exchange=self.exchange_name,
-            routing_key=self.routing_key,
+            routing_key=topic,
             body=message,
         )
 
-        # Send serialized message or String
-
         # Print Confirmation
-        print(f" [x] Sent {self.routing_key}: {message}")
+        print(f" [x] Sent {self.topic}: {message}")
 
         # Close channel and connection
         self.channel.close()

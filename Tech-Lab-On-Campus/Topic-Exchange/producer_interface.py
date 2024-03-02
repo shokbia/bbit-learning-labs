@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from stock import Stock
+
 class mqProducerInterface:
     def __init__(self, exchange_name: str) -> None:
         # Save parameters to class variables
@@ -29,7 +31,7 @@ class mqProducerInterface:
 
         pass
 
-    def publishOrder(self, message: str) -> None:
+    def publishOrder(self, sector: str, stock: Stock) -> None:
         # Create Appropiate Topic String
 
         # Send serialized message or String
