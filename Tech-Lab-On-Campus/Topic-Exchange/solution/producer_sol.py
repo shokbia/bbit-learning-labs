@@ -47,7 +47,7 @@ class mqProducer(mqProducerInterface):
         )
 
         # Print Confirmation
-        print(f" [x] Sent {self.topic}: {message}")
+        print(f" [x] Sent {topic}: {message}")
 
         # Close channel and connection
         self.channel.close()

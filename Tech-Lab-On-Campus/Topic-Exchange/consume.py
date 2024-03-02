@@ -25,10 +25,6 @@ def main(sector: str, queueName: str) -> None:
     #                       WRITE CODE HERE!!!
     #
     
-    # We'll first set up the connection and channel
-    connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost'))
-    channel = connection.channel()
 
     # Declare the topic exchange
     channel.exchange_declare(exchange='topic_logs', exchange_type='topic')
