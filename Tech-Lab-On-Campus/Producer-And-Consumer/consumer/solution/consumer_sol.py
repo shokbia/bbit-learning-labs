@@ -17,14 +17,14 @@ class mqConsumer(mqConsumerInterface):
         # Establish Channel
         self.channel = self.connection.channel()
         # Create Queue if not already present
-        self.channel.queue_declare(queue="Consumer Queue")
+        self.channel.queue_declare(queue=self.queue_name)
         # Create the exchange if not already present
-        exchange = self.channel.exchange_declare(exchange="Consumer Exchange", exchange_type="direct")
+        exchange = self.channel.exchange_declare(exchange=self.exchange_name, exchange_type="direct")
         # Bind Binding Key to Queue on the exchange
         self.channel.queue_bind(
-            queue= "Consumer Queue",
-            routing_key= "Routing Key",
-            exchange="Consumer Exchange",
+            queue=self.queue_name,
+            routing_key= self.routing_key,
+            exchange=self.exchange_name,
         )
         # Set-up Callback function for receiving messages
         self.channel.basic_consume(
