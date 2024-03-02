@@ -25,14 +25,8 @@ def main(sector: str, queueName: str) -> None:
     #                       WRITE CODE HERE!!!
     #
     
-
-    # Declare the topic exchange
-    channel.exchange_declare(exchange='topic_logs', exchange_type='topic')
-    routing_key = sys.argv[1] if len(sys.argv) > 2 else 'anonymous.info'
-    message = ' '.join(sys.argv[2:]) or 'Hello World!'
-    consumer.channel.basic_publish(
-    exchange='topic_logs', routing_key=routing_key, body=message)
-    print(f" [x] Sent {routing_key}:{message}")
+    bindingKey = f"*.*.{sector}"
+    bindingKey.strip()
     
     consumer = mqConsumer(binding_key=sector.bindingKey,exchange_name="Tech Lab Topic Exchange",queue_name=queueName)    
     consumer.startConsuming()
@@ -45,7 +39,20 @@ if __name__ == "__main__":
     #
     #                       WRITE CODE HERE!!!
     #
-    sector = sys.argv[1]
-    queue = sys.argv[2]
+    parser = argparse.ArgumentParser(
+        description="Process Stock Sector, And Queue Name"
+    )
+    parser.add_argument(
+        "-s",
+        "--sector",
+        type = str,
+        help = "Stock Sectors",
+        required = True,
+    )
+    parser.add_argument(
+        "-q", "--queue", type=str, help="Queue Name", required=True
+    )
+
+    args = parser.parse_args()
     
     sys.exit(main(sector,queue))

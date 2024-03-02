@@ -5,10 +5,8 @@ import pika
 import os
 
 class mqConsumer(mqConsumerInterface):
-    def __init__(self, binding_key: str, exchange_name: str, queue_name: str):
-        self.binding_key = binding_key
+    def __init__(self, exchange_name: str):
         self.exchange_name = exchange_name
-        self.queue_name = queue_name
         self.setupRMQConnection()
     
     def setupRMQConnection(self) -> None:
@@ -17,9 +15,8 @@ class mqConsumer(mqConsumerInterface):
         self.connection = pika.BlockingConnection(parameters=con_params)
         # Establish Channel
         self.channel = self.connection.channel()
-        
         # Create the exchange if not already present
-        exchange = self.channel.exchange_declare(exchange=self.exchange_name, exchange_type="topic")
+        self.exchange = self.channel.exchange_declare(exchange=self.exchange_name, exchange_type="topic")
         
     def bindQueueToExchange(self, queueName: str, topic: str) -> None:
         # Bind Binding Key to Queue on the exchange
@@ -34,7 +31,7 @@ class mqConsumer(mqConsumerInterface):
         self.channel.queue_declare(queue=queueName)
         # Set-up Callback function for receiving messages
         self.channel.basic_consume(
-            queueName, self.on_message_callback, auto_ack=False
+            queueName, self.on_message_callback, auto_ack=True
         )
         pass
     
@@ -42,11 +39,11 @@ class mqConsumer(mqConsumerInterface):
        # De-Serialize JSON message object if Stock Object Sent
         message = json.loads(body)
         # Acknowledge And Print Message
-        # channel.basic_ack(method_frame.delivery_tag, False)
-        print(f"{message['name']} current price is {message['price']}")
+        print(f"{message['name']} current price is ${message['price']}")
 
     def startConsuming(self) -> None:
          # Start consuming messages
+        print("[*] Waiting for messages. To exit press CTRL + C")
         self.channel.start_consuming()
 
     def __del__(self) -> None:
